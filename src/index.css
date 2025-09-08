@@ -1,0 +1,14 @@
+* {
+	box-sizing: border-box;
+	font-family: "Karla", sans-serif;
+}
+
+:root {
+	--primary-text-color: #293264;
+	--alternate-text-color: #f5f7fb;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+}

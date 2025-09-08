@@ -1,0 +1,26 @@
+main {
+	position: relative;
+	height: 100vh;
+	width: 100vw;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+#top-blob {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 35vw;
+	height: 35vh;
+	z-index: -1;
+	z-index: -1;
+}
+
+#bottom-blob {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 25vw;
+	height: 25vh;
+}
