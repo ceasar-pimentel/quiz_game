@@ -4,14 +4,14 @@ interface QuestionProps extends props {
 	questionModel: QuestionModel;
 	className: string;
 	onChange: (index: number, newModel: QuestionModel) => void;
-	index: number;
+	questionIndex: number;
 }
 
 export default function Question({
 	questionModel,
 	className,
 	onChange,
-	index,
+	questionIndex,
 }: QuestionProps) {
 	return (
 		<fieldset className={className}>
@@ -19,22 +19,25 @@ export default function Question({
 
 			<section className={className}>
 				{[...questionModel.incorrect_answers, questionModel.correct_answer].map(
-					(answer) => {
+					(answer, index) => {
 						return (
-							<label key={answer}>
-								<input
-									type="radio"
-									name={questionModel.question}
-									value={answer}
-									onClick={() =>
-										onChange(index, {
-											...questionModel,
-											selected_answer: answer,
-										})
-									}
-								/>
-								{answer}
-							</label>
+							<div>
+								<label key={answer}>
+									<input
+										id={index.toString()}
+										type="radio"
+										name={questionModel.question}
+										value={answer}
+										onClick={() =>
+											onChange(questionIndex, {
+												...questionModel,
+												selected_answer: answer,
+											})
+										}
+									/>
+									<span>{answer}</span>
+								</label>
+							</div>
 						);
 					}
 				)}
