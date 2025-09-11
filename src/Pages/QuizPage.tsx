@@ -34,24 +34,7 @@ export default function QuizPage() {
 		)
 			.then((res) => res.json())
 			.then((data) => {
-				const formattedData = data.results.map(
-					(questionModel: QuestionModel) => {
-						questionModel.category = he.decode(questionModel.category);
-						questionModel.correct_answer = he.decode(
-							questionModel.correct_answer
-						);
-						questionModel.difficulty = he.decode(questionModel.difficulty);
-						questionModel.incorrect_answers =
-							questionModel.incorrect_answers.map((incorrectAnswer) => {
-								return he.decode(incorrectAnswer);
-							});
-						questionModel.question = he.decode(questionModel.question);
-						questionModel.type = he.decode(questionModel.type);
-
-						return questionModel;
-					}
-				);
-
+				const formattedData = data.results.map(decodeQuestionData);
 				setData(formattedData);
 			});
 	}, []);
@@ -74,4 +57,19 @@ export default function QuizPage() {
 			</div>
 		</main>
 	);
+}
+
+function decodeQuestionData(questionModel: QuestionModel): QuestionModel {
+	questionModel.category = he.decode(questionModel.category);
+	questionModel.correct_answer = he.decode(questionModel.correct_answer);
+	questionModel.difficulty = he.decode(questionModel.difficulty);
+	questionModel.incorrect_answers = questionModel.incorrect_answers.map(
+		(incorrectAnswer) => {
+			return he.decode(incorrectAnswer);
+		}
+	);
+	questionModel.question = he.decode(questionModel.question);
+	questionModel.type = he.decode(questionModel.type);
+
+	return questionModel;
 }
