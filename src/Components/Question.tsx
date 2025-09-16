@@ -1,47 +1,72 @@
-import type { props, QuestionModel } from "../utility";
+import type { props, IQuestionModel } from "../utility";
+import { useRef, type JSX } from "react";
 
 interface QuestionProps extends props {
-	questionModel: QuestionModel;
-	className: string;
-	onChange: (index: number, newModel: QuestionModel) => void;
-	questionIndex: number;
+	questionModel: IQuestionModel;
+	className?: string;
+	onChange: (key: string, newModel: IQuestionModel) => void;
+	validate: boolean;
+	questionId: string;
 }
 
 export default function Question({
 	questionModel,
 	className,
 	onChange,
-	questionIndex,
+	validate,
+	questionId,
 }: QuestionProps) {
+	if (validate) {
+		// need to get the right and wrong answers and their corresponding element.
+	}
+
 	return (
-		<fieldset className={className}>
+		<fieldset className={className} key={questionId}>
 			<legend>{questionModel.question}</legend>
 
 			<section className={className}>
-				{[...questionModel.incorrect_answers, questionModel.correct_answer].map(
-					(answer, index) => {
-						return (
-							<div>
-								<label key={answer}>
-									<input
-										id={index.toString()}
-										type="radio"
-										name={questionModel.question}
-										value={answer}
-										onClick={() =>
-											onChange(questionIndex, {
-												...questionModel,
-												selected_answer: answer,
-											})
-										}
-									/>
-									<span>{answer}</span>
-								</label>
-							</div>
-						);
-					}
-				)}
+				{Object.keys(questionModel.choices).map((key) => {
+					const answer = questionModel.choices[key];
+					return (
+						<div key={answer}>
+							<label key={answer}>
+								<input
+									id={key}
+									key={key}
+									type="radio"
+									name={questionModel.question}
+									value={answer}
+									onClick={() => onChange(key, questionModel)}
+								/>
+								<span>{answer}</span>
+							</label>
+						</div>
+					);
+				})}
 			</section>
 		</fieldset>
+	);
+}
+
+function buildAnswers(
+	key: string,
+	answer: string,
+	questionModel: IQuestionModel,
+	onChange: (key: string, newModel: IQuestionModel) => void
+): JSX.Element {
+	return (
+		<div>
+			<label>
+				<input
+					id={key}
+					key={key}
+					type="radio"
+					name={answer}
+					value={answer}
+					onClick={() => onChange(key, questionModel)}
+				/>
+				<span>{answer}</span>
+			</label>
+		</div>
 	);
 }

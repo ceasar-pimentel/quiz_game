@@ -1,75 +1,81 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Question from "../Components/Question";
 import "./QuizPage.css";
-import type { QuestionModel } from "../utility";
-import he from "he";
+import {
+	type IQuestionModel,
+	type QuestionDictionary,
+	type IQuestionDTO,
+	MapQuestion,
+} from "../utility";
+
+import { v4 as uuidv4 } from "uuid";
 
 export default function QuizPage() {
 	const numberOfQuestions = 5;
-	const [data, setData] = useState<QuestionModel[]>([]);
-	const correctAnswers = useRef(0);
 
-	function updateChange(index: number, newModel: QuestionModel) {
+	// states
+	const [data, setData] = useState<QuestionDictionary>({});
+	const [validate, setValidate] = useState(false);
+
+	function updateChange(key: string, newModel: IQuestionModel) {
 		setData((prev) => {
-			const copy = [...prev];
-			copy[index] = newModel;
-			console.log(copy[index].selected_answer);
-			return copy;
+			prev[key] = newModel;
+			return prev;
 		});
 	}
 
-	function checkAnswersHandler() {
-		for (const question of data as QuestionModel[]) {
-			if (question.selected_answer === question.correct_answer) {
-				correctAnswers.current++;
-			}
-		}
+	useFetchQuestionData(numberOfQuestions, setData);
 
-		console.log(correctAnswers);
-	}
+	return (
+		<main id="quiz-container">
+			<div>
+				{Object.keys(data)?.map((key: string) => {
+					return (
+						<Question
+							key={key}
+							questionId={key}
+							questionModel={data[key]}
+							className="sdf"
+							validate={validate}
+							onChange={updateChange}
+						/>
+					);
+				})}
+			</div>
+			<div>
+				<button
+					onClick={() => {
+						setValidate(true);
+					}}
+				>
+					Check Answers
+				</button>
+			</div>
+		</main>
+	);
+}
 
+function useFetchQuestionData(
+	numberOfQuestions: number,
+	setData: React.Dispatch<React.SetStateAction<QuestionDictionary>>
+) {
 	useEffect(() => {
 		fetch(
 			`https://opentdb.com/api.php?amount=${numberOfQuestions}&difficulty=easy&type=multiple`
 		)
 			.then((res) => res.json())
 			.then((data) => {
-				const formattedData = data.results.map(decodeQuestionData);
-				setData(formattedData);
+				const questionDictionary: QuestionDictionary = {};
+				const results: IQuestionDTO[] = data.results;
+
+				results.forEach((element: IQuestionDTO) => {
+					questionDictionary[uuidv4()] = MapQuestion(element);
+				});
+
+				setData(questionDictionary);
+			})
+			.catch((error) => {
+				console.error("fetch error", error);
 			});
 	}, []);
-
-	return (
-		<main id="quiz-container">
-			<div>
-				{data.map((questionModel: QuestionModel, index: number) => (
-					<Question
-						key={index}
-						className="question"
-						questionModel={questionModel}
-						onChange={updateChange}
-						questionIndex={index}
-					/>
-				))}
-			</div>
-			<div>
-				<button onClick={checkAnswersHandler}>Check Answers</button>
-			</div>
-		</main>
-	);
-}
-
-function decodeQuestionData(questionModel: QuestionModel): QuestionModel {
-	questionModel.category = he.decode(questionModel.category);
-	questionModel.correct_answer = he.decode(questionModel.correct_answer);
-	questionModel.difficulty = he.decode(questionModel.difficulty);
-	questionModel.incorrect_answers = questionModel.incorrect_answers.map(
-		(incorrectAnswer) => {
-			return he.decode(incorrectAnswer);
-		}
-	);
-	questionModel.question = he.decode(questionModel.question);
-	questionModel.type = he.decode(questionModel.type);
-
-	return questionModel;
 }
