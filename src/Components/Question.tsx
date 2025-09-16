@@ -24,26 +24,24 @@ export default function Question({
 		<fieldset className={className} key={questionId}>
 			<legend>{questionModel.question}</legend>
 
-			<section className={className}>
-				{Object.keys(questionModel.choices).map((key) => {
-					const answer = questionModel.choices[key];
-					return (
-						<div key={answer}>
-							<label key={answer}>
-								<input
-									id={key}
-									key={key}
-									type="radio"
-									name={questionModel.question}
-									value={answer}
-									onClick={() => onChange(key, questionModel)}
-								/>
-								<span>{answer}</span>
-							</label>
-						</div>
-					);
-				})}
-			</section>
+			{Object.keys(questionModel.choices).map((key) => {
+				const answer = questionModel.choices[key];
+				return (
+					<div className="choice" key={answer}>
+						<label key={answer}>
+							<input
+								id={key}
+								key={key}
+								type="radio"
+								name={questionModel.question}
+								value={answer}
+								onClick={() => onChange(key, questionModel)}
+							/>
+							<span>{answer}</span>
+						</label>
+					</div>
+				);
+			})}
 		</fieldset>
 	);
 }

@@ -35,7 +35,7 @@ export default function QuizPage() {
 							key={key}
 							questionId={key}
 							questionModel={data[key]}
-							className="sdf"
+							className="question"
 							validate={validate}
 							onChange={updateChange}
 						/>
